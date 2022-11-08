@@ -18,11 +18,12 @@ class OneWire:
     CMD_SKIPROM = const(0xcc)
     PULLUP_ON = const(1)
 
-    def __init__(self, pin):
+    def __init__(self, pin, sleep_time_delay=5):
         self.pin = pin
         self.pin.init(pin.OPEN_DRAIN, pin.PULL_UP)
         self.disable_irq = machine.disable_irq
         self.enable_irq = machine.enable_irq
+        self.sleep_time_delay = sleep_time_delay # microsecond
         self.crctab1 = (b"\x00\x5E\xBC\xE2\x61\x3F\xDD\x83"
                         b"\xC2\x9C\x7E\x20\xA3\xFD\x1F\x41")
         self.crctab2 = (b"\x00\x9D\x23\xBE\x46\xDB\x65\xF8"
@@ -57,7 +58,7 @@ class OneWire:
         pin(0)
         # skip sleep_us(1) here, results in a 2 us pulse.
         pin(1)
-        sleep_us(5) # 8 us delay in total
+        sleep_us(self.sleep_time_delay) # 8 us delay in total
         value = pin()
         self.enable_irq(i)
         sleep_us(40)
